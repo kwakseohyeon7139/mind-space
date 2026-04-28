@@ -1,0 +1,84 @@
+.sun-screen-flare {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: var(--sun-flare-opacity, 0);
+  transition: opacity 0.08s linear;
+}
+
+.sun-screen-flare span {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* main glow at sun position */
+.sun-flare-source {
+  left: var(--sun-flare-x, 50vw);
+  top: var(--sun-flare-y, 50vh);
+  width: clamp(120px, 14vw, 200px);
+  height: clamp(120px, 14vw, 200px);
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255,255,240,0.55) 0 4%, rgba(255,218,132,0.26) 16%, rgba(230,128,42,0.09) 34%, rgba(0,0,0,0) 62%);
+  filter: blur(1px);
+}
+
+/* beam and ray intentionally removed — long lines looked wrong */
+
+/* soft ambient wash between sun and screen center */
+.sun-flare-wash {
+  left: var(--sun-flare-mid-x, 50vw);
+  top: var(--sun-flare-mid-y, 44vh);
+  width: min(520px, 64vw);
+  height: min(260px, 30vh);
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse, rgba(255,224,158,0.10) 0%, rgba(229,137,48,0.04) 44%, rgba(0,0,0,0) 72%);
+  filter: blur(18px);
+}
+
+/* lens ghosts */
+.sun-flare-ghost {
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255,230,168,0.14) 0 12%, rgba(255,185,90,0.06) 28%, rgba(0,0,0,0) 58%),
+    radial-gradient(circle, rgba(0,0,0,0) 48%, rgba(255,217,146,0.09) 55%, rgba(0,0,0,0) 70%);
+  filter: blur(0.5px);
+}
+
+.sun-flare-ghost-1 {
+  left: var(--sun-ghost-1-x, 50vw);
+  top: var(--sun-ghost-1-y, 50vh);
+  width: 44px;
+  height: 44px;
+  opacity: 0.60;
+}
+
+.sun-flare-ghost-2 {
+  left: var(--sun-ghost-2-x, 50vw);
+  top: var(--sun-ghost-2-y, 50vh);
+  width: 96px;
+  height: 96px;
+  opacity: 0.40;
+}
+
+.sun-flare-ghost-3 {
+  left: var(--sun-ghost-3-x, 50vw);
+  top: var(--sun-ghost-3-y, 50vh);
+  width: 62px;
+  height: 62px;
+  opacity: 0.36;
+}
+
+.sun-flare-ghost-4 {
+  left: var(--sun-ghost-4-x, 50vw);
+  top: var(--sun-ghost-4-y, 50vh);
+  width: 28px;
+  height: 28px;
+  opacity: 0.50;
+}
