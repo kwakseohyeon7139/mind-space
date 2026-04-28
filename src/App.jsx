@@ -61,9 +61,18 @@ function playPadTap() {
 const CockpitOverlay = ({ visible, activeControl, onProfile, onSettings, onLogin }) => (
   <nav className={`cockpit-overlay ${visible ? 'cockpit-overlay-visible' : ''} ${activeControl ? `cockpit-press-${activeControl}` : ''}`} aria-hidden={!visible}>
     <div className="bottom-nav">
-      <button className="bottom-nav-item" type="button" onClick={onSettings}>SETTING</button>
-      <button className="bottom-nav-item" type="button" onClick={onLogin}>LOG IN</button>
-      <button className="bottom-nav-item" type="button" onClick={onProfile}>ABOUT ME</button>
+      <button className="bottom-nav-item" type="button" onClick={onSettings}>
+        <span className="nav-ind" />
+        SETTING
+      </button>
+      <button className="bottom-nav-item" type="button" onClick={onLogin}>
+        <span className="nav-ind" />
+        LOG IN
+      </button>
+      <button className="bottom-nav-item" type="button" onClick={onProfile}>
+        <span className="nav-ind" />
+        ABOUT ME
+      </button>
     </div>
   </nav>
 )
@@ -226,7 +235,7 @@ export default function App() {
         </button>
       </div>
 
-      <div className={`controls-hint ${showControls && !categoryOpen && !selectedPost ? 'controls-hint-visible' : ''}`}>
+      <div className={`controls-hint ${showControls ? 'controls-hint-visible' : ''}`}>
         <div className="controls-row">
           <span className="controls-key">W A S D</span>
           <span className="controls-sep">.</span>

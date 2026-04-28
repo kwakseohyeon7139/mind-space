@@ -1,16 +1,27 @@
-/* ── Cockpit HUD — minimal center panel ── */
+/* ── Cockpit HUD — instrument panel style ── */
 
+/* hide legacy decorations */
+.cockpit-arm, .cockpit-arm-hand, .cockpit-wing, .cockpit-ind,
+.cockpit-rig, .cockpit-base-plate, .cockpit-switch-bank, .cockpit-switch,
+.cockpit-lever-unit, .cockpit-lever, .cockpit-lever-slot,
+.cockpit-reticle, .cockpit-reticle-ring, .cockpit-reticle-dot,
+.cockpit-dock, .cockpit-pad, .cockpit-shortcuts, .cockpit-shortcut,
+.cockpit-nav, .cockpit-nav-item, .bottom-nav-edge {
+  display: none !important;
+}
+
+/* ── Overlay wrapper ── */
 .cockpit-overlay {
   position: fixed !important;
   left: 50% !important;
-  bottom: 22px !important;
+  bottom: 0 !important;
   top: auto !important;
   right: auto !important;
-  width: auto !important;
-  height: auto !important;
+  width: min(520px, 100vw) !important;
+  height: 72px !important;
   margin: 0 !important;
   padding: 0 !important;
-  transform: translate(-50%, 8px) !important;
+  transform: translate(-50%, 10px) !important;
   pointer-events: none !important;
   z-index: 12 !important;
   opacity: 0 !important;
@@ -19,10 +30,8 @@
   box-shadow: none !important;
   filter: none !important;
   clip-path: none !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 0 !important;
-  transition: opacity 0.5s ease, transform 0.5s ease !important;
+  display: block !important;
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2,0.8,0.2,1) !important;
 }
 
 .cockpit-overlay-visible {
@@ -36,58 +45,41 @@
   content: none !important;
 }
 
-/* hide every legacy decoration */
-.cockpit-arm,
-.cockpit-arm-hand,
-.cockpit-wing,
-.cockpit-ind,
-.cockpit-rig,
-.cockpit-base-plate,
-.cockpit-switch-bank,
-.cockpit-switch,
-.cockpit-lever-unit,
-.cockpit-lever,
-.cockpit-lever-slot,
-.cockpit-reticle,
-.cockpit-reticle-ring,
-.cockpit-reticle-dot,
-.cockpit-dock,
-.cockpit-pad,
-.cockpit-shortcuts,
-.cockpit-shortcut,
-.cockpit-nav,
-.cockpit-nav-item {
-  display: none !important;
-}
-
-/* ── Center HUD panel ── */
+/* ── Panel — trapezoid instrument panel ── */
 .bottom-nav {
-  position: relative !important;
+  position: absolute !important;
+  inset: 0 !important;
   left: auto !important;
   right: auto !important;
   top: auto !important;
   bottom: auto !important;
-  width: auto !important;
-  height: 38px !important;
+  width: 100% !important;
+  height: 100% !important;
   margin: 0 !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  align-items: flex-end !important;
+  justify-content: space-around !important;
   gap: 0 !important;
-  padding: 0 10px !important;
-  background: linear-gradient(180deg, rgba(14,14,18,0.72) 0%, rgba(8,8,12,0.80) 100%) !important;
-  border: 1px solid rgba(255,255,255,0.07) !important;
-  border-radius: 4px !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  padding: 0 32px 14px !important;
+
+  /* trapezoid — narrower at top, wider at bottom edge */
+  clip-path: polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 24, 0.60) 0%,
+    rgba(8, 10, 20, 0.90) 50%,
+    rgba(6, 8, 16, 0.97) 100%
+  ) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  /* inset shadow follows clip-path — creates top edge glow */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.07),
-    inset 0 0 24px rgba(255,255,255,0.015),
-    0 8px 28px rgba(0,0,0,0.55) !important;
+    inset 0 1px 0 rgba(255,255,255,0.13),
+    inset 0 2px 12px rgba(255,255,255,0.02) !important;
   pointer-events: auto !important;
   transform: none !important;
-  clip-path: none !important;
-  border-radius: 8px !important;
+  border: none !important;
+  border-radius: 0 !important;
   grid-template-columns: none !important;
 }
 
@@ -97,92 +89,92 @@
   content: none !important;
 }
 
-/* accent edges hidden */
-.bottom-nav-edge { display: none !important; }
-
-/* clean tech buttons */
+/* ── Buttons ── */
 .bottom-nav-item {
   position: relative !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
+  left: auto !important; right: auto !important;
+  top: auto !important; bottom: auto !important;
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-end !important;
+  gap: 5px !important;
   flex: 0 0 auto !important;
   width: auto !important;
-  min-width: 64px !important;
-  height: 28px !important;
+  min-width: 72px !important;
+  height: auto !important;
   margin: 0 !important;
-  padding: 0 12px !important;
+  padding: 0 8px !important;
   border: none !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: rgba(255,255,255,0.42) !important;
+  color: rgba(255,255,255,0.38) !important;
   font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   font-weight: 500 !important;
-  letter-spacing: 0.04em !important;
-  text-transform: none !important;
+  letter-spacing: 0.10em !important;
+  text-transform: uppercase !important;
   text-shadow: none !important;
   cursor: pointer !important;
   pointer-events: auto !important;
   transform: none !important;
-  transition: color 0.16s ease, background 0.16s ease, text-shadow 0.16s ease !important;
+  transition: color 0.18s ease !important;
 }
 
 .bottom-nav-item:hover {
-  color: rgba(255,255,255,0.92) !important;
+  color: rgba(255,255,255,0.88) !important;
   background: transparent !important;
   text-shadow: none !important;
 }
 
-/* dividers removed */
-.bottom-nav-item:not(:last-of-type)::after {
-  display: none !important;
-  content: none !important;
+/* indicator dot above each button label */
+.nav-ind {
+  display: block !important;
+  width: 3px !important;
+  height: 3px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.20) !important;
+  transition: background 0.18s ease !important;
+  flex-shrink: 0 !important;
 }
 
+.bottom-nav-item:hover .nav-ind {
+  background: rgba(255,255,255,0.65) !important;
+}
+
+/* press states */
+.bottom-nav-item:not(:last-of-type)::after,
 .bottom-nav-item:not(:first-of-type)::before {
   display: none !important;
   content: none !important;
 }
 
-.bottom-nav-profile {
-  color: rgba(255,255,255,0.88) !important;
-  background: rgba(255,255,255,0.06) !important;
-  text-shadow: none !important;
-  font-weight: 600 !important;
-}
-
-.bottom-nav-profile:hover {
-  background: rgba(255,255,255,0.10) !important;
-  text-shadow: 0 0 8px rgba(255,255,255,0.35) !important;
-}
-
-.bottom-nav-item-active,
 .cockpit-press-settings .bottom-nav-item:nth-of-type(1),
-.cockpit-press-login .bottom-nav-item:nth-of-type(3) {
+.cockpit-press-login    .bottom-nav-item:nth-of-type(2),
+.cockpit-press-profile  .bottom-nav-item:nth-of-type(3) {
   color: rgba(255,255,255,1) !important;
-  background: rgba(255,255,255,0.10) !important;
-  text-shadow: 0 0 10px rgba(255,255,255,0.45) !important;
 }
 
-.cockpit-press-profile .bottom-nav-profile {
-  background: rgba(255,255,255,0.14) !important;
-  text-shadow: 0 0 10px rgba(255,255,255,0.55) !important;
+.cockpit-press-settings .bottom-nav-item:nth-of-type(1) .nav-ind,
+.cockpit-press-login    .bottom-nav-item:nth-of-type(2) .nav-ind,
+.cockpit-press-profile  .bottom-nav-item:nth-of-type(3) .nav-ind {
+  background: rgba(255,255,255,0.90) !important;
 }
+
+.bottom-nav-profile { display: none !important; }
 
 @media (max-width: 640px) {
   .cockpit-overlay {
-    bottom: 16px !important;
+    width: 100vw !important;
+    height: 64px !important;
+  }
+  .bottom-nav {
+    padding: 0 16px 12px !important;
+    clip-path: polygon(4% 0%, 96% 0%, 100% 100%, 0% 100%) !important;
   }
   .bottom-nav-item {
-    min-width: 56px !important;
-    padding: 0 10px !important;
-    font-size: 10px !important;
-    height: 30px !important;
+    min-width: 60px !important;
+    font-size: 9px !important;
   }
 }
