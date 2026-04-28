@@ -24,13 +24,6 @@ const PointerIcon = () => (
   </svg>
 )
 
-const PanelIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <path d="M15 3v18"/>
-  </svg>
-)
-
 function playPadTap() {
   const AudioContext = window.AudioContext || window.webkitAudioContext
   if (!AudioContext) return
@@ -59,7 +52,7 @@ function playPadTap() {
 }
 
 const CockpitOverlay = ({ visible, activeControl, onProfile, onSettings, onLogin }) => (
-  <nav className={`cockpit-overlay ${visible ? 'cockpit-overlay-visible' : ''} ${activeControl ? `cockpit-press-${activeControl}` : ''}`} aria-hidden={!visible}>
+  <nav className={`cockpit-overlay ${visible ? 'cockpit-overlay-visible' : ''} ${activeControl ? `cockpit-press-${activeControl}` : ''}`} aria-hidden={!visible} style={{display:'none'}}>
     <div className="bottom-nav">
       <button className="bottom-nav-item" type="button" onClick={onSettings}>
         <span className="nav-ind" />
@@ -110,7 +103,7 @@ const SettingsPanel = ({ open, mode, onModeChange, onClose }) => (
 
 export default function App() {
   const [selectedPost, setSelectedPost] = useState(null)
-  const [categoryOpen, setCategoryOpen] = useState(false)
+  const [viewMode, setViewMode] = useState('space')
   const [fading, setFading] = useState(true)
   const [showControls, setShowControls] = useState(false)
   const [mode, setMode] = useState('drag')
@@ -133,8 +126,6 @@ export default function App() {
   const switchMode = (m) => { config.mode = m; setMode(m) }
 
   const handleCardClick = (post) => { setSelectedPost(post) }
-  const handleTogglePanel = () => { setCategoryOpen(v => !v) }
-  const handleCategoryClose = () => setCategoryOpen(false)
   const handlePostClose = () => setSelectedPost(null)
 
   const triggerControl = (control, action) => {
@@ -211,18 +202,17 @@ export default function App() {
       </div>
 
       <div className="header">
-        <span className="header-dot" />
-        mind space
+        <button className={`view-tab ${viewMode === 'blog' ? 'view-tab-on' : ''}`} onClick={() => setViewMode('blog')}>BLOG</button>
+        <span className="view-tab-sep">·</span>
+        <button className={`view-tab ${viewMode === 'space' ? 'view-tab-on' : ''}`} onClick={() => setViewMode('space')}>SPACE</button>
         <MusicPlayer visible={showControls} />
       </div>
 
-      <button
-        className={`panel-toggle-btn ${showControls ? 'panel-toggle-visible' : ''} ${categoryOpen ? 'panel-toggle-active' : ''}`}
-        onClick={handleTogglePanel}
-        title="Categories"
-      >
-        <PanelIcon />
-      </button>
+      <div className={`top-nav ${showControls ? 'top-nav-visible' : ''}`}>
+        <button className="top-nav-btn" onClick={handleSettingsOpen}>setting</button>
+        <button className="top-nav-btn" onClick={handleLoginOpen}>log in</button>
+        <button className="top-nav-btn" onClick={handleProfileOpen}>about me</button>
+      </div>
 
       <GraphMinimap visible={showControls} />
 
@@ -268,7 +258,7 @@ export default function App() {
 
       <div className={`fade-overlay ${fading ? '' : 'fade-overlay-out'}`} />
 
-      <CategoryNav open={categoryOpen} onClose={handleCategoryClose} />
+      <CategoryNav visible={showControls} />
       <PostReader post={selectedPost} onClose={handlePostClose} />
 
       {showLoginModal && (

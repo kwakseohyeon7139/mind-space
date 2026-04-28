@@ -56,15 +56,14 @@ export function GraphMinimap({ visible }) {
       ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, S); ctx.stroke()
       ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(S, cy); ctx.stroke()
 
-      // card dots
+      // card dots — unified gray
       Object.entries(nav.cardPositions).forEach(([id, pos]) => {
-        const color = colorMap[parseInt(id)]
-        if (!color || !pos) return
+        if (!pos) return
         const [dx, dy] = toCanvas(pos[0], pos[2])
         if (dx < 0 || dx > S || dy < 0 || dy > S) return
         ctx.beginPath()
-        ctx.arc(dx, dy, 1.6, 0, Math.PI * 2)
-        ctx.fillStyle = color + 'bb'
+        ctx.arc(dx, dy, 1.4, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(200,202,210,0.50)'
         ctx.fill()
       })
 
@@ -105,11 +104,11 @@ export function GraphMinimap({ visible }) {
 
       ctx.restore() // end circle clip
 
-      // circle border ring
+      // circle border ring — thin
       ctx.beginPath()
       ctx.arc(cx, cy, r, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(255,255,255,0.10)'
-      ctx.lineWidth = 1
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)'
+      ctx.lineWidth = 0.5
       ctx.stroke()
     }
 
