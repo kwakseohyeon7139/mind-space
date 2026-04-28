@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { Scene } from './components/Scene'
 import { CategoryNav } from './components/CategoryNav'
 import { PostReader } from './components/PostReader'
@@ -100,6 +100,8 @@ const SettingsPanel = ({ open, mode, onModeChange, onClose }) => (
 )
 
 export default function App() {
+  const [entered, setEntered] = useState(false)
+  const musicTriggerRef = useRef(null)
   const [selectedPost, setSelectedPost] = useState(null)
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [fading, setFading] = useState(true)
@@ -116,10 +118,17 @@ export default function App() {
   const [loginError, setLoginError] = useState(false)
 
   useEffect(() => {
-    const t1 = setTimeout(() => setFading(false), 800)
-    const t2 = setTimeout(() => setShowControls(true), 1400)
+    if (!entered) return
+    const t1 = setTimeout(() => setFading(false), 300)
+    const t2 = setTimeout(() => setShowControls(true), 900)
     return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [])
+  }, [entered])
+
+  const handleEnter = () => {
+    setEntered(true)
+    // trigger music unmute — MusicPlayer listens for this ref call
+    if (musicTriggerRef.current) musicTriggerRef.current()
+  }
 
   const switchMode = (m) => { config.mode = m; setMode(m) }
 
@@ -180,6 +189,22 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#06060e', overflow: 'hidden' }}>
+      {/* Enter splash — shown before user enters */}
+      {!entered && (
+        <div className="enter-screen">
+          <div className="enter-screen-bg" />
+          <div className="enter-screen-content">
+            <div className="enter-screen-title">mind space</div>
+            <div className="enter-screen-sub">a quiet archive drifting through memory</div>
+            <button className="enter-screen-btn" onClick={handleEnter}>
+              <span>enter</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <div className="enter-screen-hint">음악이 함께 시작됩니다</div>
+          </div>
+        </div>
+      )}
+
       <Canvas
         camera={{ position: [0, 0, 0], fov: 75 }}
         gl={{ antialias: true, alpha: false }}
@@ -204,7 +229,7 @@ export default function App() {
       <div className="header">
         <span className="header-dot" />
         mind space
-        <MusicPlayer visible={showControls} />
+        <MusicPlayer visible={showControls} triggerRef={musicTriggerRef} />
       </div>
 
       <button

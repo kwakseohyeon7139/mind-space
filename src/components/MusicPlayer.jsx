@@ -22,7 +22,7 @@ const IconMuted = () => (
   </svg>
 )
 
-export function MusicPlayer({ visible }) {
+export function MusicPlayer({ visible, triggerRef }) {
   const playerRef  = useRef(null)
   const readyRef   = useRef(false)
   const mutedRef   = useRef(true)   // shadow of muted state for closures
@@ -78,6 +78,11 @@ export function MusicPlayer({ visible }) {
         delete window.onYouTubeIframeAPIReady
     }
   }, []) // eslint-disable-line
+
+  // ── expose doUnmute via triggerRef (called by Enter screen) ────────
+  useEffect(() => {
+    if (triggerRef) triggerRef.current = doUnmute
+  }) // no deps — always keep ref fresh
 
   // ── auto-unmute on first real user gesture ───────────────────────
   // How it works:
