@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
 const VIDEO_ID = 'scke4gYlGFo'
-
-// Gesture events Chrome/Firefox/Safari all recognise as user activation
 const GESTURE_EVENTS = ['pointerdown', 'click', 'keydown', 'touchstart']
 
 const IconMusic = () => (
@@ -22,14 +20,13 @@ const IconMuted = () => (
   </svg>
 )
 
-export function MusicPlayer({ visible, triggerRef }) {
-  const playerRef  = useRef(null)
-  const readyRef   = useRef(false)
-  const mutedRef   = useRef(true)   // shadow of muted state for closures
+export function MusicPlayer({ visible }) {
+  const playerRef    = useRef(null)
+  const readyRef     = useRef(false)
+  const mutedRef     = useRef(true)
+  const pendingRef   = useRef(false)   // user gestured before player was ready
   const [muted, setMuted] = useState(true)
-  const [ready, setReady] = useState(false)
 
-  // ── unmute helper ────────────────────────────────────────────────
   const doUnmute = () => {
     if (!playerRef.current || !readyRef.current || !mutedRef.current) return
     try {
@@ -41,7 +38,7 @@ export function MusicPlayer({ visible, triggerRef }) {
     } catch (_) {}
   }
 
-  // ── init YouTube IFrame player ───────────────────────────────────
+  // ── init YouTube IFrame player ─────────────────────────────────────
   useEffect(() => {
     function initPlayer() {
       playerRef.current = new window.YT.Player('yt-hidden-player', {
@@ -55,10 +52,11 @@ export function MusicPlayer({ visible, triggerRef }) {
           onReady: (e) => {
             e.target.setVolume(55)
             readyRef.current = true
-            setReady(true)
-            // Attempt immediate unmute — works when browser has enough
-            // media engagement (returning visitors, Firefox, some Chromes)
-            doUnmute()
+            // If user already gestured while player was loading → unmute now
+            if (pendingRef.current) {
+              doUnmute()
+              pendingRef.current = false
+            }
           },
         },
       })
@@ -67,47 +65,33 @@ export function MusicPlayer({ visible, triggerRef }) {
     if (window.YT?.Player) {
       initPlayer()
     } else {
-      const tag = document.createElement('script')
-      tag.src = 'https://www.youtube.com/iframe_api'
-      document.head.appendChild(tag)
-      window.onYouTubeIframeAPIReady = initPlayer
+      // API not ready yet — wait for callback
+      const prev = window.onYouTubeIframeAPIReady
+      window.onYouTubeIframeAPIReady = () => {
+        if (prev) prev()
+        initPlayer()
+      }
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const tag = document.createElement('script')
+        tag.src = 'https://www.youtube.com/iframe_api'
+        document.head.appendChild(tag)
+      }
     }
 
-    return () => {
-      if (window.onYouTubeIframeAPIReady === initPlayer)
-        delete window.onYouTubeIframeAPIReady
-    }
+    return () => { /* player lives for session */ }
   }, []) // eslint-disable-line
 
-  // ── expose doUnmute via triggerRef (called by Enter screen) ────────
-  useEffect(() => {
-    if (triggerRef) triggerRef.current = doUnmute
-  }) // no deps — always keep ref fresh
-
-  // ── auto-unmute on first real user gesture ───────────────────────
-  // How it works:
-  //   YouTube autoplays muted (browsers allow this).
-  //   The iframe already has "autoplay" permission from the embed.
-  //   Calling unMute() WITHIN a user-activation event handler
-  //   propagates the activation into the cross-origin iframe,
-  //   so the browser allows it — no policy violation.
+  // ── unmute on first real user gesture ─────────────────────────────
   useEffect(() => {
     const handleGesture = () => {
-      // remove first so we don't fire twice
       GESTURE_EVENTS.forEach(ev => document.removeEventListener(ev, handleGesture, true))
+      if (!mutedRef.current) return  // already unmuted
 
       if (readyRef.current) {
         doUnmute()
       } else {
-        // Player still loading — poll briefly then unmute
-        // (still within acceptable "activation propagation" window on most browsers)
-        const tid = setInterval(() => {
-          if (readyRef.current) {
-            clearInterval(tid)
-            doUnmute()
-          }
-        }, 80)
-        setTimeout(() => clearInterval(tid), 6000)
+        // Player still loading — mark pending, onReady will pick it up
+        pendingRef.current = true
       }
     }
 
@@ -115,9 +99,9 @@ export function MusicPlayer({ visible, triggerRef }) {
     return () => GESTURE_EVENTS.forEach(ev => document.removeEventListener(ev, handleGesture, true))
   }, []) // eslint-disable-line
 
-  // ── manual toggle ────────────────────────────────────────────────
+  // ── manual toggle ──────────────────────────────────────────────────
   const toggle = () => {
-    if (!playerRef.current || !ready) return
+    if (!playerRef.current || !readyRef.current) return
     if (mutedRef.current) {
       doUnmute()
     } else {
